@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="pl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zeszyt OOP: metody, UML, SOLID i wzorce projektowe</title>
+<link rel="icon" href="data:,">
+<meta name="description" content="Notatki do kolokwium z programowania obiektowego: rodzaje metod, diagramy klas UML, SOLID, wzorce Adapter, Dekorator, Stan, Pamiątka, Singleton, Strategia, Iterator, Obserwator, wektory. Z quizem.">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("theme"); } catch (e) {}
+    if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preload" href="fonts/literata-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/literata-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/uml.js" defer></script>
+<script src="js/diagrams.js" defer></script>
+<script src="js/quiz-data.js" defer></script>
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Przejdź do treści</a>
+
+<header class="masthead" id="top">
+  <div class="masthead-inner">
+    <p class="kicker">Programowanie obiektowe, Laboratorium 1 do 4</p>
+    <h1>Zeszyt do kolokwium</h1>
+    <p class="lede">Wszystko z rozmowy z Gemini i z instrukcji do labów, zebrane w jednym miejscu, plus to, czego tam zabrakło. Czerwonym długopisem zaznaczone są pułapki i rzeczy <span class="pen-inline">nowe</span>.</p>
+    <p class="masthead-links">
+      <a href="#sciaga">Zacznij od ściągi</a>
+      <a href="#quiz">Sprawdź się w quizie</a>
+    </p>
+  </div>
+  <div class="masthead-tools">
+    <button type="button" class="btn btn-small toc-toggle" id="toc-toggle" aria-expanded="false" aria-controls="toc">Spis treści</button>
+    <button type="button" class="btn btn-small" id="theme-toggle" aria-pressed="false">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 1.5v11a5.5 5.5 0 0 1 0-11z" fill="currentColor"/></svg>
+      <span>Ciemny motyw</span>
+    </button>
+  </div>
+</header>
+
+<noscript><p class="noscript">Diagramy UML, kalkulator wektorów i quiz potrzebują włączonego JavaScriptu. Notatki i ściąga działają bez niego.</p></noscript>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Spis treści">
+    <ol>
+      <li><a href="#sciaga">Ściąga: pytania, które padły</a></li>
+      <li><a href="#nowe">Czego nie było w czacie</a></li>
+      <li><a href="#klasy">Klasa, obiekt, hermetyzacja</a></li>
+      <li><a href="#metody">Rodzaje metod</a></li>
+      <li><a href="#relacje">Relacje i strzałki UML</a></li>
+      <li><a href="#solid">SOLID</a></li>
+      <li><a href="#wzorce">Wzorce projektowe</a>
+        <ol>
+          <li><a href="#singleton">Singleton</a></li>
+          <li><a href="#adapter">Adapter</a></li>
+          <li><a href="#dekorator">Dekorator</a></li>
+          <li><a href="#stan">Stan</a></li>
+          <li><a href="#pamiatka">Pamiątka</a></li>
+          <li><a href="#strategia">Strategia</a></li>
+          <li><a href="#iterator">Iterator</a></li>
+          <li><a href="#obserwator">Obserwator</a></li>
+          <li><a href="#mylace">Wzorce, które się mylą</a></li>
+        </ol>
+      </li>
+      <li><a href="#wektory">Wektory i układy współrzędnych</a></li>
+      <li><a href="#laby">Wzorce w zadaniach z labów</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+    </ol>
+  </nav>
+
+  <main id="main">
+
+    <!-- 1. ŚCIĄGA -->
+    <section id="sciaga" class="sheet" aria-labelledby="h-sciaga">
+      <h2 id="h-sciaga"><span class="num" aria-hidden="true">1</span>Ściąga: pytania, które już padły</h2>
+      <p>Lista z czatu: tematy, o które pytano na zaliczeniu. Najpierw spróbuj odpowiedzieć sam, potem rozwiń.</p>
+      <button type="button" class="btn" id="cheat-toggle" aria-pressed="false">Zasłoń odpowiedzi i sprawdź się</button>
+
+      <div class="cheat">
+        <details open>
+          <summary>Co to jest przeładowanie funkcji (metody)?</summary>
+          <p>Kilka metod o <strong>tej samej nazwie</strong> w jednej klasie, różniących się <strong>listą parametrów</strong> (liczbą, typem lub kolejnością). Sam typ zwracany nie wystarczy. Przykład: <code>dodaj(int, int)</code> i <code>dodaj(double, double)</code>. <a href="#metody-przeladowanie">Przeładowanie a nadpisanie</a></p>
+        </details>
+        <details open>
+          <summary>Czy metoda abstrakcyjna w klasie wymusza abstrakcyjność klasy?</summary>
+          <p><strong>Tak.</strong> W drugą stronę nie: klasa abstrakcyjna nie musi mieć żadnej metody abstrakcyjnej.</p>
+        </details>
+        <details open>
+          <summary>Jakim operatorem porównasz tożsamość obiektów?</summary>
+          <p>Java, C#: <code>==</code> na referencjach (a <code>equals()</code> porównuje zawartość). Python: <code>is</code>. JavaScript, PHP: <code>===</code>. <a href="#klasy-tozsamosc">Tożsamość a równość</a></p>
+        </details>
+        <details open>
+          <summary>Jakim symbolem w UML oznacza się kompozycję?</summary>
+          <p>Linia ciągła z <strong>wypełnionym (czarnym) rombem</strong> po stronie całości. Pusty romb to agregacja. <a href="#relacje">Wszystkie strzałki</a></p>
+        </details>
+        <details open>
+          <summary>Jak w UML zapisać metodę statyczną?</summary>
+          <p><strong>Podkreśleniem</strong>, np. <code class="u">+ policz(x: int): int</code>. Kursywa oznacza abstrakcyjność.</p>
+        </details>
+        <details open>
+          <summary>Wymień zasady SOLID</summary>
+          <p><strong>S</strong> jedna odpowiedzialność, <strong>O</strong> otwarte na rozszerzanie, zamknięte na modyfikację, <strong>L</strong> podstawienie Liskov, <strong>I</strong> segregacja interfejsów, <strong>D</strong> odwrócenie zależności. <a href="#solid">Tabela z przykładami</a></p>
+        </details>
+        <details open>
+          <summary>Pamiątka: co robi i jak ją narysować?</summary>
+          <p>Zapisuje i przywraca stan (Cofnij) bez łamania hermetyzacji. Twórca tworzy i czyta Pamiątkę (przerywana ze strzałką), Opiekun przechowuje listę pamiątek (ciągła z pustym rombem). <a href="#pamiatka">Diagram</a></p>
+        </details>
+        <details open>
+          <summary>Adapter: co robi i jak go narysować?</summary>
+          <p>Tłumaczy jeden interfejs na inny. Adapter implementuje interfejs docelowy (przerywana z pustym trójkątem) i trzyma referencję do adaptowanego obiektu (ciągła ze strzałką). <a href="#adapter">Diagram</a></p>
+        </details>
+        <details open>
+          <summary>Wzór: biegunowy (r, α) na kartezjański (x, y)</summary>
+          <p><code>x = r · cos α</code>, <code>y = r · sin α</code></p>
+        </details>
+        <details open>
+          <summary>Wzór: kartezjański (x, y) na biegunowy (r, α)</summary>
+          <p><code>r = √(x² + y²)</code>, <code>α = atan2(y, x)</code>. Matematycznie <code>α = arctan(y / x)</code> dla x &gt; 0; dla x &lt; 0 dodaj π (180°). <a href="#wektory">Kalkulator</a></p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 2. NOWE -->
+    <section id="nowe" aria-labelledby="h-nowe">
+      <h2 id="h-nowe"><span class="num" aria-hidden="true">2</span>Czego nie było w czacie</h2>
+      <p>Tych rzeczy nie omówiłeś z Gemini, a są w instrukcjach do labów albo wynikają z pytań, które padły. Na kolokwium mogą wyjść jako pytanie pomocnicze.</p>
+      <ul class="new-list">
+        <li><a href="#metody-przeladowanie">Przeładowanie a nadpisywanie</a>: polimorfizm statyczny i dynamiczny.</li>
+        <li><a href="#klasy-abstrakcyjna">Klasa abstrakcyjna a interfejs</a>: kiedy które.</li>
+        <li><a href="#klasy-argumenty">Rodzaje argumentów in, out, inout</a> i wzorzec zapisu składowej w UML (Lab 1).</li>
+        <li><a href="#klasy">Hermetyzacja pełna</a> i modyfikator pakietowy <code>~</code>.</li>
+        <li><a href="#relacje">Kolejność relacji według siły</a>, krotności (<code>1</code>, <code>0..*</code>) i stereotyp <code>«create»</code>.</li>
+        <li><a href="#singleton">Singleton</a> (Lab 1), <a href="#strategia">Strategia</a>, <a href="#iterator">Iterator</a> i <a href="#obserwator">Obserwator</a> (Lab 4).</li>
+        <li><a href="#mylace">Stan a Strategia</a>: prawie ten sam diagram, inna intencja.</li>
+        <li><a href="#wektory">Iloczyn skalarny i wektorowy metodą macierzową</a> (Lab 2).</li>
+        <li><a href="#laby">Który wzorzec pasuje do którego zadania z labów</a>.</li>
+      </ul>
+    </section>
+
+    <!-- 3. KLASY -->
+    <section id="klasy" aria-labelledby="h-klasy">
+      <h2 id="h-klasy"><span class="num" aria-hidden="true">3</span>Klasa, obiekt, hermetyzacja</h2>
+      <p><strong>Klasa</strong> to definicja obiektów: określa ich <em>tożsamość</em> (jednoznaczna identyfikacja i przynależność do klasy), dopuszczalny <em>stan</em> (wartości pól) i <em>zachowanie</em> (metody). <strong>Obiekt</strong> to instancja klasy. Zbiór metod klasy to jej interfejs.</p>
+
+      <figure class="uml" data-uml="anatomia">
+        <div class="uml-scroll"><div class="uml-canvas" style="--w:640;--h:270"></div></div>
+        <figcaption>Prostokąt klasy ma trzy części: nazwa, pola (stan), metody (zachowanie). <code>count</code> i <code>getCount()</code> są podkreślone, więc statyczne. Kursywa przy <em>Figura</em> i <em>pole()</em> oznacza abstrakcyjność.</figcaption>
+      </figure>
+
+      <div class="split">
+        <div>
+          <h3>Modyfikatory dostępu</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Symbol</th><th scope="col">Dostęp</th><th scope="col">Kto widzi</th></tr></thead>
+              <tbody>
+                <tr><td><code>+</code></td><td>publiczny</td><td>wszystkie klasy</td></tr>
+                <tr><td><code>#</code></td><td>chroniony</td><td>ta klasa i klasy pochodne</td></tr>
+                <tr><td><code>-</code></td><td>prywatny</td><td>tylko ta klasa</td></tr>
+                <tr><td><code>~</code></td><td>pakietowy</td><td>klasy z tego samego pakietu</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="klasy-argumenty">
+          <h3>Rodzaje argumentów <span class="pen-inline">nowe</span></h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Rodzaj</th><th scope="col">Metoda może</th></tr></thead>
+              <tbody>
+                <tr><td><code>in</code></td><td>czytać, nie może zmieniać</td></tr>
+                <tr><td><code>out</code></td><td>zmieniać, nie może czytać</td></tr>
+                <tr><td><code>inout</code></td><td>czytać i zmieniać</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p>Wzorce zapisu z Lab 1. Pole: <code>@nazwa: typ = wartość_początkowa</code>. Metoda: <code>@nazwa(lista_parametrów): typ_wyniku</code>. Parametr: <code>rodzaj nazwa: typ = wartość_początkowa</code>. Znak <code>@</code> zastępuje symbol dostępu.</p>
+
+      <h3>Hermetyzacja (enkapsulacja)</h3>
+      <p>Wiąże dane z metodami, które na nich operują, i ukrywa stan przed bezpośrednim dostępem z zewnątrz. Dzięki niej obiekt nie zmieni stanu innego obiektu w nieoczekiwany sposób. Gdy do <em>wszystkich</em> pól dostaje się wyłącznie przez metody, to <strong>hermetyzacja pełna</strong>.</p>
+
+      <h3 id="klasy-tozsamosc">Tożsamość a równość</h3>
+      <aside class="note">Pułapka: w Javie <code>==</code> na dwóch <code>String</code> z <code>new</code> daje <code>false</code>, chociaż tekst jest ten sam.</aside>
+      <p>Tożsamość: dwie zmienne wskazują <em>ten sam</em> obiekt w pamięci. Równość: dwa <em>różne</em> obiekty mają tę samą zawartość.</p>
+<pre><code>String a = new String("ala");
+String b = new String("ala");
+a == b;        // false: dwa różne obiekty (tożsamość)
+a.equals(b);   // true: ta sama zawartość (równość)
+a == a;        // true</code></pre>
+      <p>C#: <code>==</code> dla klas porównuje referencje, chyba że klasa przeciąża operator (jak <code>string</code>); pewne sprawdzenie tożsamości daje <code>ReferenceEquals(a, b)</code>. C++: porównujesz adresy, <code>&amp;a == &amp;b</code>.</p>
+
+      <h3 id="klasy-abstrakcyjna">Klasa abstrakcyjna a interfejs <span class="pen-inline">nowe</span></h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col"></th><th scope="col">Klasa abstrakcyjna</th><th scope="col">Interfejs</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Można utworzyć obiekt?</th><td>Nie</td><td>Nie</td></tr>
+            <tr><th scope="row">Pola (stan)</th><td>Tak</td><td>Nie (tylko stałe)</td></tr>
+            <tr><th scope="row">Konstruktor</th><td>Tak (woła go klasa pochodna)</td><td>Nie</td></tr>
+            <tr><th scope="row">Ile naraz (Java, C#)</th><td>dziedziczysz po jednej</td><td>implementujesz wiele</td></tr>
+            <tr><th scope="row">Znaczenie</th><td>„jest rodzajem” (Kolo jest Figura)</td><td>„umie coś” (Kolekcja jest Sortowalna)</td></tr>
+            <tr><th scope="row">W UML</th><td>nazwa kursywą</td><td><code>«interface»</code> nad nazwą</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Polimorfizm</strong> to korzystanie z jednego interfejsu przez obiekty różnych typów: zmienna typu <code>Figura</code> może wskazywać <code>Kolo</code> albo <code>Kwadrat</code>, a <code>f.pole()</code> wywoła właściwą wersję.</p>
+    </section>
+
+    <!-- 4. METODY -->
+    <section id="metody" aria-labelledby="h-metody">
+      <h2 id="h-metody"><span class="num" aria-hidden="true">4</span>Rodzaje metod</h2>
+      <p>Metody dzieli się według tego, do czego należą (klasa czy obiekt) i jak zachowują się przy dziedziczeniu.</p>
+      <dl class="terms">
+        <dt>Instancyjna (zwykła)</dt><dd>Należy do obiektu, trzeba go najpierw utworzyć: <code>auto.jedz()</code>. Widzi pola i stan obiektu.</dd>
+        <dt>Statyczna <code>static</code></dt><dd>Należy do klasy, wołasz ją bez obiektu: <code>Math.sqrt(9)</code>. Nie widzi zwykłych pól obiektu. W UML: podkreślenie.</dd>
+        <dt>Abstrakcyjna <code>abstract</code></dt><dd>Sama sygnatura, bez ciała. Tylko w klasie abstrakcyjnej; klasy pochodne muszą ją dopisać. W UML: kursywa.</dd>
+        <dt>Wirtualna <code>virtual</code> / nadpisana <code>override</code></dt><dd>Ma domyślny kod w klasie bazowej, klasa pochodna może go zmienić. W Javie każda zwykła metoda jest domyślnie wirtualna.</dd>
+        <dt>Finalna <code>final</code> / zapieczętowana <code>sealed</code></dt><dd>Zablokowana: klasa pochodna nie może jej nadpisać.</dd>
+        <dt>Konstruktor</dt><dd>Nazwa jak klasa, uruchamia się przy tworzeniu obiektu i ustawia wartości początkowe.</dd>
+      </dl>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Szybkie porównanie</caption>
+          <thead><tr><th scope="col">Metoda</th><th scope="col">Wymaga obiektu?</th><th scope="col">Ma ciało?</th><th scope="col">Można nadpisać?</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Instancyjna</th><td>Tak</td><td>Tak</td><td>Tak (domyślnie w Javie)</td></tr>
+            <tr><th scope="row">Statyczna</th><td>Nie</td><td>Tak</td><td>Nie</td></tr>
+            <tr><th scope="row">Abstrakcyjna</th><td>Tak (obiekt klasy pochodnej)</td><td>Nie</td><td>Trzeba</td></tr>
+            <tr><th scope="row">Wirtualna</th><td>Tak</td><td>Tak</td><td>Tak, opcjonalnie</td></tr>
+            <tr><th scope="row">Finalna</th><td>Tak</td><td>Tak</td><td>Nie</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="code">
+        <summary>Pokaż wszystkie rodzaje w jednej klasie (Java)</summary>
+<pre><code>abstract class Figura {
+    private static int licznik = 0;            // pole statyczne: jedno na całą klasę
+    protected String nazwa;
+
+    Figura(String nazwa) {                     // konstruktor
+        this.nazwa = nazwa;
+        licznik++;
+    }
+    static int ileFigur() { return licznik; }  // statyczna: Figura.ileFigur()
+    abstract double pole();                    // abstrakcyjna: brak ciała
+    String opis() { return nazwa + ": " + pole(); }  // instancyjna (wirtualna)
+    final String id() { return nazwa.toUpperCase(); } // finalna
+}
+
+class Kolo extends Figura {
+    private final double r;
+    Kolo(double r) { super("koło"); this.r = r; }
+    @Override
+    double pole() { return Math.PI * r * r; }   // nadpisanie metody abstrakcyjnej
+}</code></pre>
+      </details>
+
+      <h3 id="metody-przeladowanie">Przeładowanie a nadpisywanie <span class="pen-inline">nowe</span></h3>
+      <aside class="note">Pułapka: metody różniące się tylko typem zwracanym to błąd kompilacji, nie przeładowanie.</aside>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col"></th><th scope="col">Przeładowanie (overloading)</th><th scope="col">Nadpisanie (overriding)</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Gdzie</th><td>ta sama klasa</td><td>klasa pochodna</td></tr>
+            <tr><th scope="row">Nazwa</th><td>ta sama</td><td>ta sama</td></tr>
+            <tr><th scope="row">Parametry</th><td>muszą być inne</td><td>muszą być takie same</td></tr>
+            <tr><th scope="row">Kiedy wybór wersji</th><td>przy kompilacji (polimorfizm statyczny)</td><td>w czasie działania (polimorfizm dynamiczny)</td></tr>
+          </tbody>
+        </table>
+      </div>
+<pre><code>int    dodaj(int a, int b)         { return a + b; }
+double dodaj(double a, double b)   { return a + b; }      // inny typ parametrów
+int    dodaj(int a, int b, int c)  { return a + b + c; }  // inna liczba parametrów
+// double dodaj(int a, int b) { ... }   błąd: różni się tylko typem zwracanym</code></pre>
+    </section>
+
+    <!-- 5. RELACJE -->
+    <section id="relacje" aria-labelledby="h-relacje">
+      <h2 id="h-relacje"><span class="num" aria-hidden="true">5</span>Relacje i strzałki UML</h2>
+      <p>Na diagramie klas wystarczą prostokąty i sześć rodzajów linii. Kolejność poniżej to kolejność według siły relacji z Lab 1, od najsilniejszej.</p>
+      <ol class="relations">
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-dziedziczenie"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Dziedziczenie</h3>
+            <p>Przekazanie wszystkich cech. Klasa pochodna jest szczególnym przypadkiem bazowej.</p>
+            <p class="how">Linia ciągła, <strong>pusty trójkąt przy klasie bazowej</strong>. Czasem z dopiskiem <code>Extends</code>.</p>
+          </div>
+        </li>
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-implementacja"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Implementacja interfejsu</h3>
+            <p>Klasa realizuje kontrakt interfejsu. Nie ma jej na liście z Lab 1, ale rysuje się ją w każdym wzorcu.</p>
+            <p class="how">Linia <strong>przerywana</strong>, pusty trójkąt przy interfejsie.</p>
+          </div>
+        </li>
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-kompozycja"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Kompozycja (agregacja całkowita)</h3>
+            <p>Całość tworzy części i nimi zarządza. Żyją tyle samo: usunięcie domu usuwa pokoje.</p>
+            <p class="how">Linia ciągła, <strong>wypełniony romb przy całości</strong>.</p>
+          </div>
+        </li>
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-agregacja"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Agregacja częściowa</h3>
+            <p>Całość zawiera części, ale nimi nie zarządza. Po likwidacji firmy osoby dalej istnieją.</p>
+            <p class="how">Linia ciągła, <strong>pusty romb przy całości</strong>.</p>
+          </div>
+        </li>
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-asocjacja"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Asocjacja</h3>
+            <p>Czasowe powiązanie niezależnych obiektów. Nikt nikogo nie tworzy ani nie usuwa. Zwykle ma nazwę-czasownik.</p>
+            <p class="how">Linia ciągła; otwarta strzałka, gdy chcesz pokazać kierunek „kto kogo wywołuje”.</p>
+          </div>
+        </li>
+        <li>
+          <figure class="uml uml-mini" data-uml="rel-zaleznosc"><div class="uml-scroll"><div class="uml-canvas" style="--w:380;--h:90"></div></div></figure>
+          <div>
+            <h3>Zależność</h3>
+            <p>Jedna klasa oddziałuje na drugą, np. tworzy jej obiekt albo bierze go w parametrze.</p>
+            <p class="how">Linia <strong>przerywana</strong> z otwartą strzałką, często ze stereotypem <code>«create»</code>.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h3>Krotności <span class="pen-inline">nowe</span></h3>
+      <aside class="note">Romb zawsze stoi przy całości, a trójkąt przy klasie ogólniejszej. Na odwrót to najczęstszy błąd.</aside>
+      <p>Liczby przy końcach linii mówią, ile obiektów bierze udział w relacji: <code>1</code> dokładnie jeden, <code>0..1</code> zero lub jeden, <code>0..*</code> lub <code>*</code> dowolnie wiele, <code>1..*</code> co najmniej jeden, <code>n</code> dokładnie n. Na rysunku asocjacji: jedna osoba akceptuje od zera do n umów.</p>
+    </section>
+
+    <!-- 6. SOLID -->
+    <section id="solid" aria-labelledby="h-solid">
+      <h2 id="h-solid"><span class="num" aria-hidden="true">6</span>SOLID</h2>
+      <p>Pięć podstawowych zasad projektowania obiektowego.</p>
+      <div class="table-wrap">
+        <table class="solid">
+          <thead><tr><th scope="col">Litera</th><th scope="col">Zasada</th><th scope="col">W skrócie</th><th scope="col">Przykład</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" class="letter">S</th><td>Jednej odpowiedzialności<br><span class="en">Single Responsibility</span></td><td>Klasa ma jeden powód do zmiany.</td><td>Osobna klasa liczy rachunek, osobna zapisuje go w bazie.</td></tr>
+            <tr><th scope="row" class="letter">O</th><td>Otwarte/zamknięte<br><span class="en">Open/Closed</span></td><td>Otwarta na rozszerzanie, zamknięta na modyfikację.</td><td>Płatność BLIK jako nowa klasa, bez przerabiania starego if/else.</td></tr>
+            <tr><th scope="row" class="letter">L</th><td>Podstawienia Liskov<br><span class="en">Liskov Substitution</span></td><td>W miejscu klasy bazowej można użyć dowolnej pochodnej.</td><td>Pingwin nie powinien dziedziczyć po Ptak z metodą lec().</td></tr>
+            <tr><th scope="row" class="letter">I</th><td>Segregacji interfejsów<br><span class="en">Interface Segregation</span></td><td>Wiele małych interfejsów zamiast jednego dużego.</td><td>Drukarka i Skaner zamiast UrzadzenieBiurowe.</td></tr>
+            <tr><th scope="row" class="letter">D</th><td>Odwrócenia zależności<br><span class="en">Dependency Inversion</span></td><td>Zależ od abstrakcji, nie od konkretnych klas.</td><td>Sklep używa interfejsu Platnosc, nie klasy PlatnoscKarta.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Segregacja interfejsów na rysunku</h3>
+      <p>Żadna klasa nie powinna być zmuszana do implementowania metod, których nie używa. Kliknij klasy, żeby zobaczyć, co jest nie tak.</p>
+      <figure class="uml" data-uml="isp-zle">
+        <div class="uml-scroll"><div class="uml-canvas" style="--w:720;--h:300"></div></div>
+        <figcaption><strong>Źle:</strong> jeden gruby interfejs. Zwykła drukarka musi udawać, że skanuje i faksuje.</figcaption>
+      </figure>
+      <figure class="uml" data-uml="isp-dobrze">
+        <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:300"></div></div>
+        <figcaption><strong>Dobrze:</strong> trzy małe interfejsy. Każda klasa bierze tylko to, co umie.</figcaption>
+      </figure>
+      <p>Zysk: koniec z pustymi metodami, zmiana w <code>Faks</code> nie dotyka zwykłej drukarki, a małe interfejsy łatwo łączyć jak klocki.</p>
+
+      <details class="code">
+        <summary>Odwrócenie zależności w kodzie</summary>
+<pre><code>interface Platnosc { void zaplac(double kwota); }
+
+class PlatnoscKarta implements Platnosc { public void zaplac(double k) { /* ... */ } }
+class PlatnoscBlik  implements Platnosc { public void zaplac(double k) { /* ... */ } }
+
+class Sklep {
+    private final Platnosc platnosc;           // abstrakcja, nie konkretna klasa
+    Sklep(Platnosc platnosc) { this.platnosc = platnosc; }
+    void kup(double kwota) { platnosc.zaplac(kwota); }
+}
+
+new Sklep(new PlatnoscBlik()).kup(49.99);</code></pre>
+      </details>
+    </section>
+
+    <!-- 7. WZORCE -->
+    <section id="wzorce" aria-labelledby="h-wzorce">
+      <h2 id="h-wzorce"><span class="num" aria-hidden="true">7</span>Wzorce projektowe</h2>
+      <p>Na każdym diagramie kliknij klasę albo strzałkę, a pod spodem pojawi się wyjaśnienie. To samo zrobisz klawiaturą przyciskami pod rysunkiem.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Kategoria</th><th scope="col">Czym się zajmuje</th><th scope="col">Wzorce tutaj</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Kreacyjne</th><td>tworzeniem obiektów</td><td><a href="#singleton">Singleton</a></td></tr>
+            <tr><th scope="row">Strukturalne</th><td>składaniem klas i obiektów</td><td><a href="#adapter">Adapter</a>, <a href="#dekorator">Dekorator</a></td></tr>
+            <tr><th scope="row">Behawioralne (czynnościowe)</th><td>zachowaniem i komunikacją</td><td><a href="#stan">Stan</a>, <a href="#pamiatka">Pamiątka</a>, <a href="#strategia">Strategia</a>, <a href="#iterator">Iterator</a>, <a href="#obserwator">Obserwator</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <article id="singleton" class="pattern">
+        <h3>Singleton <span class="tag">kreacyjny</span> <span class="pen-inline">nowe</span></h3>
+        <p class="gist">Ogranicza liczbę obiektów klasy do jednego i daje do niego globalny dostęp.</p>
+        <figure class="uml" data-uml="singleton">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:580;--h:170"></div></div>
+        </figure>
+        <p>Trzy elementy: <strong>prywatny konstruktor</strong>, <strong>statyczne pole</strong> z instancją (na początku <code>null</code>) i <strong>statyczna metoda</strong> <code>getInstance()</code>, która zwraca instancję, a jeśli jej nie ma, wywołuje konstruktor i zapamiętuje wynik.</p>
+        <aside class="note">Pułapka: bez <code>synchronized</code> dwa wątki mogą naraz zobaczyć <code>null</code> i utworzyć dwa obiekty.</aside>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>public final class Konfiguracja {
+    private static Konfiguracja instance = null;   // statyczne pole
+    private Konfiguracja() { }                     // prywatny konstruktor
+
+    public static synchronized Konfiguracja getInstance() {
+        if (instance == null) {
+            instance = new Konfiguracja();
+        }
+        return instance;
+    }
+}
+
+Konfiguracja a = Konfiguracja.getInstance();
+Konfiguracja b = Konfiguracja.getInstance();
+// a == b  ->  true, to ten sam obiekt</code></pre>
+        </details>
+      </article>
+
+      <article id="adapter" class="pattern">
+        <h3>Adapter <span class="tag">strukturalny</span></h3>
+        <p class="gist">Łączy dwie niepasujące klasy: tłumaczy interfejs, którego oczekuje klient, na interfejs istniejącej klasy, bez ruszania jej kodu.</p>
+        <p>Jak przejściówka do gniazdka albo nakładka, która z XML starej biblioteki robi JSON dla nowego systemu. Poniżej wersja z Lab 2: klient chce kąt wektora w układzie biegunowym, a <code>Vector2D</code> zna tylko x i y.</p>
+        <figure class="uml" data-uml="adapter">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:350"></div></div>
+        </figure>
+        <p>Jak narysować adapter: adapter <strong>implementuje</strong> interfejs docelowy (przerywana linia, pusty trójkąt) i <strong>trzyma referencję</strong> do obiektu adaptowanego (ciągła linia ze strzałką). Wszystkie metody poza nową deleguje do <code>srcVector</code>.</p>
+        <aside class="note">Lab 2 pokazuje też wersję z dziedziczeniem (<code>2DPolarInheritance extends Vector2D</code>). Wada: działa tylko przy kompilacji, nie zaadaptujesz istniejącego obiektu.</aside>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>interface IVector  { double abs(); double cdot(IVector p); double[] getComponents(); }
+interface IPolar2D { double getAngle(); }
+
+class Polar2DAdapter implements IVector, IPolar2D {
+    private final Vector2D srcVector;
+    Polar2DAdapter(Vector2D v) { this.srcVector = v; }
+
+    public double abs()               { return srcVector.abs(); }        // delegacja
+    public double cdot(IVector p)     { return srcVector.cdot(p); }
+    public double[] getComponents()   { return srcVector.getComponents(); }
+
+    public double getAngle() {                                           // jedyna nowa logika
+        double[] c = srcVector.getComponents();
+        return Math.atan2(c[1], c[0]);
+    }
+}</code></pre>
+        </details>
+      </article>
+
+      <article id="dekorator" class="pattern">
+        <h3>Dekorator <span class="tag">strukturalny</span></h3>
+        <p class="gist">Dynamicznie dokłada obiektowi nowe zachowanie, bez zmiany jego kodu i bez mnożenia podklas.</p>
+        <p>Zamiast klas <code>KawaZMlekiem</code>, <code>KawaZSyropem</code>, <code>KawaZMlekiemISyropem</code> owijasz <code>KawaBaza</code> w dekorator <code>Mleko</code>, a potem w <code>Syrop</code>. Każdy woła <code>cena()</code> obiektu w środku i dolicza swoją kwotę. W Lab 2 dekorator dodaje wektorowi trzeci wymiar i iloczyn wektorowy.</p>
+        <figure class="uml" data-uml="dekorator">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:400"></div></div>
+        </figure>
+        <p>Jak rozpoznać dekorator na diagramie: klasa <strong>implementuje interfejs i jednocześnie go zawiera</strong> (dwie linie do tego samego interfejsu: trójkąt i romb).</p>
+        <details class="code">
+          <summary>Kod (Java), iloczyn wektorowy metodą macierzową</summary>
+<pre><code>class Vector3DDecorator implements IVector {
+    private final IVector srcVector;   // owinięty obiekt
+    private final double z;
+
+    Vector3DDecorator(IVector v, double z) { this.srcVector = v; this.z = z; }
+
+    public double[] getComponents() {
+        double[] c = srcVector.getComponents();
+        return new double[] { c[0], c[1], z };
+    }
+    public double abs() {
+        double[] c = getComponents();
+        return Math.sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+    }
+    public double cdot(IVector p) {
+        double[] a = getComponents(), b = p.getComponents();
+        double bz = b.length &gt; 2 ? b[2] : 0;          // wektor 2D ma z = 0
+        return a[0]*b[0] + a[1]*b[1] + a[2]*bz;
+    }
+    public Vector3DDecorator cross(IVector p) {
+        double[] a = getComponents(), b = p.getComponents();
+        double bz = b.length &gt; 2 ? b[2] : 0;
+        double x = a[1]*bz   - a[2]*b[1];
+        double y = a[2]*b[0] - a[0]*bz;
+        double zz = a[0]*b[1] - a[1]*b[0];
+        return new Vector3DDecorator(new Vector2D(x, y), zz);
+    }
+    public IVector getSrcV() { return srcVector; }
+}</code></pre>
+        </details>
+      </article>
+
+      <article id="stan" class="pattern">
+        <h3>Stan <span class="tag">behawioralny</span></h3>
+        <p class="gist">Obiekt zmienia zachowanie zależnie od stanu, w którym jest. Z zewnątrz wygląda, jakby zmienił klasę.</p>
+        <p>Zamiast <code>if (stan == NOWY) ... else if (stan == WYSLANY) ...</code> każdy stan to osobna klasa ze wspólnym interfejsem. Kontekst trzyma bieżący stan i deleguje do niego akcje. Ta sama metoda <code>anuluj()</code> w stanie Nowe zwraca pieniądze, a w stanie Wysłane blokuje operację. Inne przykłady: automat z napojami, automat skończony.</p>
+        <figure class="uml" data-uml="stan">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:800;--h:330"></div></div>
+        </figure>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>interface StanZamowienia {
+    void oplac(Zamowienie z);
+    void anuluj(Zamowienie z);
+}
+
+class StanNowe implements StanZamowienia {
+    public void oplac(Zamowienie z)  { z.zmienStan(new StanWyslane()); }
+    public void anuluj(Zamowienie z) { System.out.println("Anulowano, zwrot pieniędzy"); }
+}
+
+class StanWyslane implements StanZamowienia {
+    public void oplac(Zamowienie z)  { System.out.println("Już opłacone"); }
+    public void anuluj(Zamowienie z) { System.out.println("Nie można anulować wysłanego"); }
+}
+
+class Zamowienie {
+    private StanZamowienia stan = new StanNowe();
+    void zmienStan(StanZamowienia s) { stan = s; }
+    void oplac()  { stan.oplac(this); }      // delegacja, bez if/switch
+    void anuluj() { stan.anuluj(this); }
+}</code></pre>
+        </details>
+      </article>
+
+      <article id="pamiatka" class="pattern">
+        <h3>Pamiątka (Memento) <span class="tag">behawioralny</span></h3>
+        <p class="gist">Zapisuje migawkę stanu obiektu i pozwala go później przywrócić (Cofnij, zapis gry), nie ujawniając prywatnych pól.</p>
+        <p>Trzy role: <strong>Twórca</strong> (obiekt, którego stan zapisujemy; sam tworzy pamiątkę i sam się z niej odtwarza), <strong>Pamiątka</strong> (niemodyfikowalna migawka), <strong>Opiekun</strong> (trzyma historię, np. stos, ale nie zagląda do środka).</p>
+        <figure class="uml" data-uml="pamiatka">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:720;--h:340"></div></div>
+        </figure>
+        <aside class="note">Pytanie kontrolne: dlaczego Opiekun nie czyta pamiątki? Bo wtedy stan Twórcy wyciekałby na zewnątrz: koniec hermetyzacji.</aside>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>final class Pamiatka {
+    private final String zapisanyTekst;
+    Pamiatka(String t) { zapisanyTekst = t; }
+    String pobierzTekst() { return zapisanyTekst; }
+}
+
+class EdytorTekstu {                       // Twórca
+    private String tekst = "";
+    void wpisz(String t) { tekst += t; }
+    Pamiatka zapisz() { return new Pamiatka(tekst); }
+    void przywroc(Pamiatka p) { tekst = p.pobierzTekst(); }
+}
+
+class Historia {                           // Opiekun
+    private final Deque&lt;Pamiatka&gt; stos = new ArrayDeque&lt;&gt;();
+    void dodaj(Pamiatka p) { stos.push(p); }
+    Pamiatka cofnij() { return stos.pop(); }
+}
+
+// użycie: Ctrl+Z
+historia.dodaj(edytor.zapisz());
+edytor.wpisz(" coś nowego");
+edytor.przywroc(historia.cofnij());</code></pre>
+        </details>
+      </article>
+
+      <article id="strategia" class="pattern">
+        <h3>Strategia <span class="tag">behawioralny</span> <span class="pen-inline">nowe</span></h3>
+        <p class="gist">Rodzina wymiennych algorytmów: każdy w osobnej klasie, wszystkie z tym samym interfejsem.</p>
+        <p>Klient tworzy obiekt strategii i wiąże go z kontekstem. Gdy klient prosi o akcję, kontekst deleguje ją do strategii. Nowy algorytm to nowa klasa, bez zmian w kontekście.</p>
+        <figure class="uml" data-uml="strategia">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:330"></div></div>
+        </figure>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>interface IStrategy { void execute(); }
+
+class NajblizszaJednostka implements IStrategy {
+    public void execute() { System.out.println("Wysyłam z najbliższej JRG"); }
+}
+class KolejnaNajblizsza implements IStrategy {
+    public void execute() { System.out.println("Brak wolnych wozów, szukam dalej"); }
+}
+
+class Context {
+    private IStrategy strategy;
+    void setStrategy(IStrategy s) { strategy = s; }
+    void execute() { strategy.execute(); }       // delegacja
+}
+
+Context c = new Context();
+c.setStrategy(new NajblizszaJednostka());
+c.execute();</code></pre>
+        </details>
+      </article>
+
+      <article id="iterator" class="pattern">
+        <h3>Iterator <span class="tag">behawioralny</span> <span class="pen-inline">nowe</span></h3>
+        <p class="gist">Sekwencyjny dostęp do elementów kolekcji bez ujawniania jej wewnętrznej struktury.</p>
+        <p>Kolekcja ma metodę tworzącą iterator. Iterator ma <code>hasNext()</code> (czy są jeszcze elementy) i <code>next()</code> (daj kolejny). Pętla <code>for (x : lista)</code> w Javie to właśnie iterator pod spodem.</p>
+        <figure class="uml" data-uml="iterator">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:330"></div></div>
+        </figure>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>interface Iterator  { boolean hasNext(); Object next(); }
+interface Aggregate { Iterator iterator(); }
+
+class ListaJednostek implements Aggregate {
+    private final Object[] items;
+    ListaJednostek(Object[] items) { this.items = items; }
+    public Iterator iterator() { return new ListaIterator(this); }   // «create»
+    int size() { return items.length; }
+    Object get(int i) { return items[i]; }
+}
+
+class ListaIterator implements Iterator {
+    private final ListaJednostek aggregate;
+    private int index = 0;
+    ListaIterator(ListaJednostek a) { aggregate = a; }
+    public boolean hasNext() { return index &lt; aggregate.size(); }
+    public Object next() { return aggregate.get(index++); }
+}
+
+Iterator it = lista.iterator();
+while (it.hasNext()) System.out.println(it.next());</code></pre>
+        </details>
+      </article>
+
+      <article id="obserwator" class="pattern">
+        <h3>Obserwator <span class="tag">behawioralny</span> <span class="pen-inline">nowe</span></h3>
+        <p class="gist">Komunikacja jeden do wielu w formie subskrypcji: podmiot powiadamia wszystkich zapisanych obserwatorów o zmianie stanu.</p>
+        <p>Podmiot ma kolekcję obserwatorów i metody: dodaj, usuń, powiadom jednego, powiadom wszystkich. Obserwator ma jedną metodę <code>update()</code>.</p>
+        <figure class="uml" data-uml="obserwator">
+          <div class="uml-scroll"><div class="uml-canvas" style="--w:780;--h:330"></div></div>
+        </figure>
+        <aside class="note">Pułapka w Javie: metody <code>notifyAll()</code> z diagramu nie napiszesz, bo <code>Object.notifyAll()</code> jest finalna. Nazwij ją np. <code>notifyAllObservers()</code>.</aside>
+        <details class="code">
+          <summary>Kod (Java)</summary>
+<pre><code>interface Observer { void update(byte[] data); }
+
+class ObservedSubject {
+    private final List&lt;Observer&gt; observers = new ArrayList&lt;&gt;();
+    protected byte[] state;
+
+    public void addObserver(Observer o)    { observers.add(o); }
+    public void removeObserver(Observer o) { observers.remove(o); }
+    public void notifyObserver(Observer o) { o.update(state); }
+    public void notifyAllObservers() {
+        for (Observer o : observers) o.update(state);
+    }
+}
+
+class JednostkaJRG implements Observer {
+    public void update(byte[] data) { System.out.println("Nowe zgłoszenie"); }
+}</code></pre>
+        </details>
+      </article>
+
+      <h3 id="mylace">Wzorce, które się mylą</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Para</th><th scope="col">Czym się różnią</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Dekorator a Adapter</th><td>Oba owijają obiekt. Dekorator <strong>zachowuje interfejs</strong> i dokłada funkcje, można go nakładać wiele razy. Adapter <strong>zmienia interfejs</strong> na inny, zwykle jedna warstwa.</td></tr>
+            <tr><th scope="row">Stan a Strategia</th><td>Prawie ten sam diagram (kontekst, interfejs, implementacje). W Stanie obiekty stanów same przełączają kontekst i znają kolejne stany (automat). Strategię wybiera klient z zewnątrz, strategie nic o sobie nie wiedzą.</td></tr>
+            <tr><th scope="row">Stan a Pamiątka</th><td>Stan zmienia <strong>zachowanie</strong> zależnie od stanu i usuwa if/switch. Pamiątka <strong>zapisuje i przywraca</strong> stan (Cofnij/Ponów) bez łamania hermetyzacji.</td></tr>
+            <tr><th scope="row">Kompozycja a agregacja w diagramach wzorców</th><td>We wzorcach (Dekorator, Stan, Strategia) obiekt w środku zwykle przychodzi z zewnątrz, więc rysuje się pusty romb (agregacja). Wypełniony tylko wtedy, gdy całość sama tworzy części i niszczy je razem ze sobą.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. WEKTORY -->
+    <section id="wektory" aria-labelledby="h-wektory">
+      <h2 id="h-wektory"><span class="num" aria-hidden="true">8</span>Wektory i układy współrzędnych</h2>
+      <p>Z Lab 2: wektor wodzący zaczyna się w (0, 0). W układzie kartezjańskim zapisujesz go jako (x, y), w biegunowym jako (r, α): długość i kąt od osi OX.</p>
+
+      <div class="formulas">
+        <div>
+          <h3>Biegunowy → kartezjański</h3>
+          <p class="formula">x = r · cos α<br>y = r · sin α</p>
+        </div>
+        <div>
+          <h3>Kartezjański → biegunowy</h3>
+          <p class="formula">r = √(x² + y²)<br>α = atan2(y, x)</p>
+          <p class="small">Ręcznie: α = arctan(y / x) dla x &gt; 0, dla x &lt; 0 dodaj π (180°).</p>
+        </div>
+        <div>
+          <h3>Moduł i iloczyn skalarny <span class="pen-inline">nowe</span></h3>
+          <p class="formula">|a| = √(x² + y² + z²)<br>a · b = x₁x₂ + y₁y₂ + z₁z₂</p>
+          <p class="small">Wynik iloczynu skalarnego to liczba.</p>
+        </div>
+        <div>
+          <h3>Iloczyn wektorowy <span class="pen-inline">nowe</span></h3>
+          <pre class="formula">        | i   j   k  |
+a × b = | x₁  y₁  z₁ |
+        | x₂  y₂  z₂ |</pre>
+          <p class="formula">x: y₁z₂ − z₁y₂<br>y: z₁x₂ − x₁z₂<br>z: x₁y₂ − y₁x₂</p>
+          <p class="small">Wynik to wektor prostopadły do a i b. Dla wektorów 2D przyjmij z = 0, wtedy wychodzi (0, 0, x₁y₂ − y₁x₂).</p>
+        </div>
+      </div>
+
+      <h3>Policz i sprawdź się</h3>
+      <div class="calcs">
+        <form id="calc-k2b" class="calc" novalidate>
+          <h4>Kartezjański → biegunowy</h4>
+          <div class="fields">
+            <label>x <input name="x" inputmode="decimal" autocomplete="off" placeholder="np. 3"></label>
+            <label>y <input name="y" inputmode="decimal" autocomplete="off" placeholder="np. -4"></label>
+          </div>
+          <button type="submit" class="btn btn-primary">Przelicz na (r, α)</button>
+          <output class="calc-out" aria-live="polite">Wpisz x i y, wynik pojawi się tutaj.</output>
+        </form>
+        <form id="calc-b2k" class="calc" novalidate>
+          <h4>Biegunowy → kartezjański</h4>
+          <div class="fields">
+            <label>r <input name="r" inputmode="decimal" autocomplete="off" placeholder="np. 5"></label>
+            <label>α w stopniach <input name="a" inputmode="decimal" autocomplete="off" placeholder="np. 30"></label>
+          </div>
+          <button type="submit" class="btn btn-primary">Przelicz na (x, y)</button>
+          <output class="calc-out" aria-live="polite">Wpisz r i kąt, wynik pojawi się tutaj.</output>
+        </form>
+        <form id="calc-vec" class="calc calc-wide" novalidate>
+          <h4>Iloczyn skalarny i wektorowy</h4>
+          <div class="fields fields-6">
+            <label><span>a<sub>x</sub></span> <input name="ax" data-label="a, składowa x" inputmode="decimal" autocomplete="off" value="1"></label>
+            <label><span>a<sub>y</sub></span> <input name="ay" data-label="a, składowa y" inputmode="decimal" autocomplete="off" value="2"></label>
+            <label><span>a<sub>z</sub></span> <input name="az" data-label="a, składowa z" inputmode="decimal" autocomplete="off" value="0"></label>
+            <label><span>b<sub>x</sub></span> <input name="bx" data-label="b, składowa x" inputmode="decimal" autocomplete="off" value="3"></label>
+            <label><span>b<sub>y</sub></span> <input name="by" data-label="b, składowa y" inputmode="decimal" autocomplete="off" value="1"></label>
+            <label><span>b<sub>z</sub></span> <input name="bz" data-label="b, składowa z" inputmode="decimal" autocomplete="off" value="0"></label>
+          </div>
+          <button type="submit" class="btn btn-primary">Policz a · b oraz a × b</button>
+          <output class="calc-out" aria-live="polite">Wpisz składowe obu wektorów (dla 2D zostaw z = 0). Wynik z rozpisanymi krokami pojawi się tutaj.</output>
+        </form>
+      </div>
+    </section>
+
+    <!-- 9. LABY -->
+    <section id="laby" aria-labelledby="h-laby">
+      <h2 id="h-laby"><span class="num" aria-hidden="true">9</span>Wzorce w zadaniach z labów</h2>
+      <p>Przy oddawaniu projektu prowadzący może zapytać, gdzie użyłeś którego wzorca. Poniżej propozycja dopasowania na podstawie treści instrukcji, nie oficjalne rozwiązanie.</p>
+      <div class="table-wrap">
+        <table class="labs">
+          <thead><tr><th scope="col">Lab</th><th scope="col">Zadanie</th><th scope="col">Gdzie pasują wzorce</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">1</th><td>Kalkulator walut na tabeli średnich kursów NBP (<code>lasta.xml</code>), bez możliwości wpisania błędnych danych. Wymagany diagram klas.</td><td>Dekompozycja i SOLID: osobno pobieranie XML, przeliczanie, walidacja wejścia. Singleton pasuje do jednego źródła tabeli kursów. Uwaga: sekcja „Uwagi” w PDF do Lab 1 jest taka sama jak w Lab 4 (Kraków, JRG), więc dopytaj, która obowiązuje.</td></tr>
+            <tr><th scope="row">2</th><td>Klasy z diagramu S4: trzy wektory, współrzędne kartezjańskie i biegunowe, iloczyny skalarny i wektorowy dla wszystkich kombinacji, plus sprawozdanie z wad i zalet podejść.</td><td>Adapter (<code>Polar2DAdapter</code>) i Dekorator (<code>Vector3DDecorator</code>) kontra wersje z dziedziczeniem. Zaleta wzorców: działają na istniejących obiektach w czasie działania; dziedziczenie tylko przy kompilacji.</td></tr>
+            <tr><th scope="row">3</th><td>Symulacja zakażeń w obszarze n × m, 25 kroków na sekundę symulacji, zapis i wczytanie stanu w dowolnej chwili t, wizualizacja.</td><td>Stan: odporny albo wrażliwy; wrażliwy zdrowy albo zakażony; zakażony z objawami albo bez. Pamiątka: zapis i odczyt symulacji. Wektory z Lab 2 do ruchu osobników.</td></tr>
+            <tr><th scope="row">4</th><td>Dysponowanie wozów PSP w Krakowie: SKKM, JRG-1 do JRG-7 i inne, po 5 wozów, zdarzenia PZ, MZ, AF.</td><td>Obserwator: SKKM powiadamia jednostki o zdarzeniu. Strategia: wybór jednostki (najbliższa, potem kolejne). Stan: wóz wolny albo zajęty. Iterator: przechodzenie po jednostkach od najbliższej.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 10. QUIZ -->
+    <section id="quiz" aria-labelledby="h-quiz">
+      <h2 id="h-quiz"><span class="num" aria-hidden="true">10</span>Sprawdź się</h2>
+      <p>Pytania z całego zeszytu. Po każdej odpowiedzi zobaczysz wyjaśnienie, a na końcu możesz powtórzyć tylko błędne.</p>
+      <div class="quiz">
+        <div class="quiz-bar">
+          <p id="quiz-progress" class="quiz-progress" aria-live="polite">Quiz się wczytuje…</p>
+          <button type="button" class="btn btn-small" id="quiz-shuffle">Zacznij od nowa, losowo</button>
+        </div>
+        <div id="quiz-box" class="quiz-box">
+          <p>Quiz się wczytuje. Jeśli ten napis nie znika, włącz JavaScript albo odśwież stronę.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <p>Źródła: instrukcje do Laboratorium 1 do 4 (mgr inż. Piotr Szuster) i <a href="https://share.gemini.google/5ftNj2e090mH">rozmowa z Gemini „Metody w programowaniu obiektowym”</a>. Rzeczy spoza tych źródeł są oznaczone dopiskiem <span class="pen-inline">nowe</span>.</p>
+  <p><a href="#top">Do góry</a></p>
+</footer>
+</body>
+</html>
