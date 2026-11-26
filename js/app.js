@@ -245,14 +245,28 @@
       p.textContent = "Wszystko dobrze. Zasłoń odpowiedzi w ściądze i spróbuj odpowiedzieć z pamięci.";
     }
     actions.appendChild(button("Od nowa, w losowej kolejności", "btn", function () {
-      start(shuffle(Q.map(function (_, k) { return k; }))); document.getElementById("quiz-q").focus();
+      start(shuffle(topicIndexes())); document.getElementById("quiz-q").focus();
     }));
     quiz.append(p, actions);
   }
 
-  start(Q.map(function (_, k) { return k; }));
+  var quizTopic = document.getElementById("quiz-topic");
+  function topicIndexes() {
+    var t = quizTopic.value;
+    return Q.map(function (_, k) { return k; }).filter(function (k) { return t === "Wszystkie" || Q[k].topic === t; });
+  }
+  ["Wszystkie"].concat(Q.map(function (q) { return q.topic; }).filter(function (t, i, a) { return a.indexOf(t) === i; }))
+    .forEach(function (t) {
+      var o = document.createElement("option");
+      o.value = t;
+      o.textContent = t + " (" + (t === "Wszystkie" ? Q.length : Q.filter(function (q) { return q.topic === t; }).length) + ")";
+      quizTopic.appendChild(o);
+    });
+  quizTopic.addEventListener("change", function () { start(topicIndexes()); });
+
+  start(topicIndexes());
   document.getElementById("quiz-shuffle").addEventListener("click", function () {
-    start(shuffle(Q.map(function (_, k) { return k; })));
+    start(shuffle(topicIndexes()));
     document.getElementById("quiz-q").focus();
   });
 
