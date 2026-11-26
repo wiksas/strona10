@@ -282,7 +282,8 @@
   var cardsProgress = document.getElementById("cards-progress");
   var deck = { queue: [], known: 0, total: 0 };
 
-  ["Wszystkie"].concat(F.map(function (c) { return c.topic; }).filter(function (t, i, a) { return a.indexOf(t) === i; }))
+  // te same tematy i w tej samej kolejności co w quizie
+  ["Wszystkie"].concat(Q.map(function (q) { return q.topic; }).filter(function (t, i, a) { return a.indexOf(t) === i && F.some(function (c) { return c.topic === t; }); }))
     .forEach(function (t) {
       var o = document.createElement("option");
       o.value = t;
