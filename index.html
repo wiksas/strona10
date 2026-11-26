@@ -20,6 +20,7 @@
 <script src="js/uml.js" defer></script>
 <script src="js/diagrams.js" defer></script>
 <script src="js/quiz-data.js" defer></script>
+<script src="js/flashcards.js" defer></script>
 <script src="js/app.js" defer></script>
 </head>
 <body>
@@ -33,6 +34,7 @@
     <p class="masthead-links">
       <a href="#sciaga">Zacznij od ściągi</a>
       <a href="#quiz">Sprawdź się w quizie</a>
+      <a href="#fiszki">Ucz się z fiszek</a>
     </p>
   </div>
   <div class="masthead-tools">
@@ -51,7 +53,16 @@
     <ol>
       <li><a href="#sciaga">Ściąga: pytania, które padły</a></li>
       <li><a href="#nowe">Czego nie było w czacie</a></li>
-      <li><a href="#klasy">Klasa, obiekt, hermetyzacja</a></li>
+      <li><a href="#klasy">Klasa i obiekt</a></li>
+      <li><a href="#filary">Cztery filary OOP</a>
+        <ol>
+          <li><a href="#filary-abstrakcja">Abstrakcja</a></li>
+          <li><a href="#filary-hermetyzacja">Hermetyzacja</a></li>
+          <li><a href="#filary-dziedziczenie">Dziedziczenie</a></li>
+          <li><a href="#filary-polimorfizm">Polimorfizm</a></li>
+        </ol>
+      </li>
+      <li><a href="#pojecia">Inne pojęcia</a></li>
       <li><a href="#metody">Rodzaje metod</a></li>
       <li><a href="#relacje">Relacje i strzałki UML</a></li>
       <li><a href="#solid">SOLID</a></li>
@@ -70,6 +81,7 @@
       </li>
       <li><a href="#wektory">Wektory i układy współrzędnych</a></li>
       <li><a href="#laby">Wzorce w zadaniach z labów</a></li>
+      <li><a href="#fiszki">Fiszki</a></li>
       <li><a href="#quiz">Quiz</a></li>
     </ol>
   </nav>
@@ -134,6 +146,8 @@
         <li><a href="#metody-przeladowanie">Przeładowanie a nadpisywanie</a>: polimorfizm statyczny i dynamiczny.</li>
         <li><a href="#klasy-abstrakcyjna">Klasa abstrakcyjna a interfejs</a>: kiedy które.</li>
         <li><a href="#klasy-argumenty">Rodzaje argumentów in, out, inout</a> i wzorzec zapisu składowej w UML (Lab 1).</li>
+        <li><a href="#filary">Abstrakcja jako czwarty filar</a> oraz rozbudowane odpowiedzi ustne o hermetyzacji, dziedziczeniu i polimorfizmie.</li>
+        <li><a href="#pojecia">Konstruktor, this, wiązanie późne, problem diamentu, kopia płytka i głęboka, spójność i powiązanie</a>.</li>
         <li><a href="#klasy">Hermetyzacja pełna</a> i modyfikator pakietowy <code>~</code>.</li>
         <li><a href="#relacje">Kolejność relacji według siły</a>, krotności (<code>1</code>, <code>0..*</code>) i stereotyp <code>«create»</code>.</li>
         <li><a href="#singleton">Singleton</a> (Lab 1), <a href="#strategia">Strategia</a>, <a href="#iterator">Iterator</a> i <a href="#obserwator">Obserwator</a> (Lab 4).</li>
@@ -145,7 +159,7 @@
 
     <!-- 3. KLASY -->
     <section id="klasy" aria-labelledby="h-klasy">
-      <h2 id="h-klasy"><span class="num" aria-hidden="true">3</span>Klasa, obiekt, hermetyzacja</h2>
+      <h2 id="h-klasy"><span class="num" aria-hidden="true">3</span>Klasa i obiekt</h2>
       <p><strong>Klasa</strong> to definicja obiektów: określa ich <em>tożsamość</em> (jednoznaczna identyfikacja i przynależność do klasy), dopuszczalny <em>stan</em> (wartości pól) i <em>zachowanie</em> (metody). <strong>Obiekt</strong> to instancja klasy. Zbiór metod klasy to jej interfejs.</p>
 
       <figure class="uml" data-uml="anatomia">
@@ -185,8 +199,8 @@
 
       <p>Wzorce zapisu z Lab 1. Pole: <code>@nazwa: typ = wartość_początkowa</code>. Metoda: <code>@nazwa(lista_parametrów): typ_wyniku</code>. Parametr: <code>rodzaj nazwa: typ = wartość_początkowa</code>. Znak <code>@</code> zastępuje symbol dostępu.</p>
 
-      <h3>Hermetyzacja (enkapsulacja)</h3>
-      <p>Wiąże dane z metodami, które na nich operują, i ukrywa stan przed bezpośrednim dostępem z zewnątrz. Dzięki niej obiekt nie zmieni stanu innego obiektu w nieoczekiwany sposób. Gdy do <em>wszystkich</em> pól dostaje się wyłącznie przez metody, to <strong>hermetyzacja pełna</strong>.</p>
+      <h3>Hermetyzacja w skrócie</h3>
+      <p>Ukrycie stanu za metodami. Gdy do <em>wszystkich</em> pól dostaje się wyłącznie przez metody, to <strong>hermetyzacja pełna</strong>. Pełna wersja do odpowiedzi ustnej: <a href="#filary-hermetyzacja">filary OOP, hermetyzacja</a>.</p>
 
       <h3 id="klasy-tozsamosc">Tożsamość a równość</h3>
       <aside class="note">Pułapka: w Javie <code>==</code> na dwóch <code>String</code> z <code>new</code> daje <code>false</code>, chociaż tekst jest ten sam.</aside>
@@ -212,12 +226,130 @@ a == a;        // true</code></pre>
           </tbody>
         </table>
       </div>
-      <p><strong>Polimorfizm</strong> to korzystanie z jednego interfejsu przez obiekty różnych typów: zmienna typu <code>Figura</code> może wskazywać <code>Kolo</code> albo <code>Kwadrat</code>, a <code>f.pole()</code> wywoła właściwą wersję.</p>
+      <p><strong>Polimorfizm</strong> to korzystanie z jednego interfejsu przez obiekty różnych typów. Szczegóły: <a href="#filary-polimorfizm">filary OOP, polimorfizm</a>.</p>
+    </section>
+
+    <!-- 4. FILARY -->
+    <section id="filary" aria-labelledby="h-filary">
+      <h2 id="h-filary"><span class="num" aria-hidden="true">4</span>Cztery filary programowania obiektowego</h2>
+      <p>Abstrakcja, hermetyzacja, dziedziczenie, polimorfizm. Pod każdym filarem jest gotowa odpowiedź ustna: definicja, po co to jest, jak to wygląda w kodzie, przykład i typowe pytanie dodatkowe.</p>
+
+      <article id="filary-abstrakcja" class="pillar">
+        <h3>Abstrakcja <span class="pen-inline">nowe</span></h3>
+        <p class="gist">Pokazujemy, <em>co</em> obiekt robi, a ukrywamy, <em>jak</em> to robi.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Abstrakcja polega na wybraniu z rzeczywistego obiektu tylko tych cech i zachowań, które są ważne w danym problemie, i pominięciu reszty. Klasa <code>Samochod</code> w programie do wypożyczalni ma numer rejestracyjny i cenę za dobę, ale nie ma składu chemicznego lakieru. W kodzie abstrakcję wyrażamy klasami abstrakcyjnymi i interfejsami: określają kontrakt (jakie metody istnieją), nie mówiąc nic o implementacji. Dzięki temu kod korzystający z obiektu zależy od kontraktu, a nie od szczegółów, i szczegóły można zmieniać bez psucia reszty programu.</p>
+        </div>
+        <p>Różnica z hermetyzacją, o którą często pytają: abstrakcja dotyczy <strong>projektu</strong> (jaki interfejs pokazać światu), hermetyzacja dotyczy <strong>ochrony</strong> (jak schować dane, żeby nikt ich nie zepsuł). Abstrakcja odpowiada na pytanie „co”, hermetyzacja na pytanie „kto ma dostęp”.</p>
+      </article>
+
+      <article id="filary-hermetyzacja" class="pillar">
+        <h3>Hermetyzacja (enkapsulacja)</h3>
+        <p class="gist">Dane obiektu są prywatne, a zmieniać je można tylko przez metody, które pilnują poprawności.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Hermetyzacja wiąże dane z metodami, które na nich operują, i ogranicza dostęp do stanu obiektu z zewnątrz. Realizuje się ją modyfikatorami dostępu: pola są prywatne (<code>-</code>), a publiczne (<code>+</code>) są tylko metody. Po co: obiekt sam pilnuje swoich niezmienników, czyli reguł, które zawsze muszą być prawdziwe, np. saldo konta nie może spaść poniżej zera. Gdyby pole <code>saldo</code> było publiczne, każdy mógłby wpisać tam dowolną liczbę. Druga korzyść: można zmienić wewnętrzną reprezentację (np. trzymać grosze zamiast złotych) bez zmiany kodu, który korzysta z klasy. Gdy wszystkie pola są dostępne tylko przez metody, mówimy o hermetyzacji pełnej.</p>
+        </div>
+        <aside class="note">Pułapka: getter i setter do każdego pola bez żadnej kontroli to tylko udawana hermetyzacja.</aside>
+<pre><code>class Konto {
+    private double saldo;                     // nikt z zewnątrz nie zmieni wprost
+
+    public double getSaldo() { return saldo; }
+
+    public void wplac(double kwota) {
+        if (kwota &lt;= 0) throw new IllegalArgumentException("Kwota musi być dodatnia");
+        saldo += kwota;
+    }
+    public void wyplac(double kwota) {
+        if (kwota &gt; saldo) throw new IllegalStateException("Brak środków");
+        saldo -= kwota;                       // niezmiennik: saldo &gt;= 0
+    }
+}</code></pre>
+        <p>Pytanie dodatkowe: <em>czym różni się <code>protected</code> od <code>private</code>?</em> Składnik chroniony widzą też klasy pochodne, prywatny tylko sama klasa. W Javie <code>protected</code> widzą dodatkowo klasy z tego samego pakietu.</p>
+      </article>
+
+      <article id="filary-dziedziczenie" class="pillar">
+        <h3>Dziedziczenie</h3>
+        <p class="gist">Klasa pochodna przejmuje cechy klasy bazowej i może je rozszerzać lub zmieniać.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Dziedziczenie to relacja „jest rodzajem” (is-a): <code>Student</code> jest rodzajem <code>Osoba</code>. Klasa pochodna dziedziczy wszystkie pola i metody klasy bazowej, może dodawać własne i nadpisywać odziedziczone metody. Klasa bazowa jest uogólnieniem, pochodna specjalizacją. Zalety: ponowne użycie kodu i możliwość traktowania obiektów pochodnych jak bazowych, co jest podstawą polimorfizmu. Wady: silne powiązanie, bo zmiana w klasie bazowej wpływa na wszystkie pochodne, a dziedziczenie ustala się przy kompilacji i nie da się go zmienić w czasie działania programu. Dlatego przy relacji „ma” (has-a) lepiej użyć kompozycji. W Javie i C# klasa dziedziczy tylko po jednej klasie, ale może implementować wiele interfejsów; C++ pozwala na wielodziedziczenie. W UML: linia ciągła z pustym trójkątem przy klasie bazowej.</p>
+        </div>
+<pre><code>class Osoba {
+    protected String imie;
+    Osoba(String imie) { this.imie = imie; }
+    String przedstawSie() { return "Jestem " + imie; }
+}
+
+class Student extends Osoba {
+    private int album;
+    Student(String imie, int album) {
+        super(imie);                          // najpierw konstruktor klasy bazowej
+        this.album = album;
+    }
+    @Override
+    String przedstawSie() {                   // nadpisanie
+        return super.przedstawSie() + ", nr albumu " + album;
+    }
+}</code></pre>
+        <aside class="note">Kolejność: przy tworzeniu obiektu najpierw działa konstruktor klasy bazowej, potem pochodnej.</aside>
+        <p>Pytania dodatkowe: <em>co to jest <code>super</code>?</em> Odwołanie do klasy bazowej: wywołanie jej konstruktora albo jej wersji metody. <em>Czy dziedziczy się składniki prywatne?</em> Są w obiekcie, ale klasa pochodna nie ma do nich bezpośredniego dostępu. <em>Czy dziedziczy się konstruktory?</em> Nie, każda klasa ma własne i musi wywołać konstruktor bazowy.</p>
+      </article>
+
+      <article id="filary-polimorfizm" class="pillar">
+        <h3>Polimorfizm</h3>
+        <p class="gist">Jedno wywołanie, różne zachowanie, zależnie od faktycznego typu obiektu.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Polimorfizm (wielopostaciowość) to mechanizm, który pozwala korzystać z jednego interfejsu obiektom różnych typów. Zmienna typu bazowego <code>Figura</code> może wskazywać na <code>Kolo</code> albo <code>Kwadrat</code>, a wywołanie <code>f.pole()</code> uruchomi wersję z klasy faktycznego obiektu. Rozróżniamy dwa rodzaje. <strong>Polimorfizm dynamiczny</strong> (czasu wykonania) opiera się na nadpisywaniu metod wirtualnych; decyzja, która wersja się wykona, zapada w czasie działania programu (późne wiązanie, w C++ przez tablicę metod wirtualnych). <strong>Polimorfizm statyczny</strong> (czasu kompilacji) to przeładowanie metod i operatorów oraz szablony i typy generyczne; wersję wybiera kompilator na podstawie typów argumentów. Po co: kod pisany względem typu bazowego działa z każdą nową klasą pochodną bez zmian, co realizuje zasadę otwarte/zamknięte.</p>
+        </div>
+<pre><code>abstract class Figura { abstract double pole(); }
+class Kolo    extends Figura { double r; Kolo(double r) { this.r = r; }    double pole() { return Math.PI * r * r; } }
+class Kwadrat extends Figura { double a; Kwadrat(double a) { this.a = a; } double pole() { return a * a; } }
+
+List&lt;Figura&gt; figury = List.of(new Kolo(1), new Kwadrat(2));
+for (Figura f : figury) {
+    System.out.println(f.pole());   // 3.14..., potem 4.0: ta sama linia, różne metody
+}</code></pre>
+        <h4>Rzutowanie w górę i w dół</h4>
+        <p><strong>Upcasting</strong> (<code>Figura f = new Kolo(1);</code>) jest zawsze bezpieczny i niejawny. <strong>Downcasting</strong> (<code>Kolo k = (Kolo) f;</code>) wymaga jawnego rzutowania i może rzucić <code>ClassCastException</code>, więc sprawdza się go przez <code>instanceof</code>. Częste używanie downcastingu sugeruje źle zaprojektowany polimorfizm.</p>
+        <p>Pytanie dodatkowe: <em>czy metodę statyczną można wywołać polimorficznie?</em> Nie. Metody statyczne są wiązane przy kompilacji według typu zmiennej; w klasie pochodnej można je tylko przesłonić (ukryć), nie nadpisać.</p>
+      </article>
+    </section>
+
+    <!-- 5. INNE POJĘCIA -->
+    <section id="pojecia" aria-labelledby="h-pojecia">
+      <h2 id="h-pojecia"><span class="num" aria-hidden="true">5</span>Inne pojęcia, o które mogą zapytać <span class="pen-inline">nowe</span></h2>
+      <dl class="terms">
+        <dt>Konstruktor i destruktor</dt>
+        <dd>Konstruktor ustawia stan początkowy obiektu, można go przeładować (kilka wersji z różnymi parametrami). Konstruktor domyślny (bezargumentowy) kompilator tworzy sam, tylko gdy nie napiszesz żadnego. Destruktor (C++: <code>~Klasa()</code>) sprząta przy niszczeniu obiektu; w Javie i C# pamięć zwalnia garbage collector, więc destruktorów w tym sensie nie piszemy.</dd>
+        <dt><code>this</code></dt>
+        <dd>Referencja do bieżącego obiektu. Używana do odróżnienia pola od parametru (<code>this.imie = imie</code>) i do wywołania innego konstruktora tej samej klasy. Nie istnieje w metodach statycznych.</dd>
+        <dt>Pole statyczne a pole instancyjne</dt>
+        <dd>Pole instancyjne ma osobną wartość w każdym obiekcie. Pole statyczne istnieje raz dla całej klasy i jest wspólne dla wszystkich obiektów, np. licznik utworzonych obiektów. W UML podkreślone.</dd>
+        <dt>Kompozycja zamiast dziedziczenia</dt>
+        <dd>Zasada: gdy relacja to „ma” (Samochód ma Silnik), trzymaj obiekt w polu zamiast po nim dziedziczyć. Kompozycję można zmieniać w czasie działania (podmienić obiekt), dziedziczenie jest ustalone przy kompilacji. Na tym opierają się Dekorator, Strategia i Stan.</dd>
+        <dt>Wielodziedziczenie i problem diamentu</dt>
+        <dd>Klasa D dziedziczy po B i C, które obie dziedziczą po A. Jeśli B i C nadpisały tę samą metodę A, nie wiadomo, którą wersję ma D. C++ rozwiązuje to dziedziczeniem wirtualnym; Java i C# po prostu nie pozwalają dziedziczyć po wielu klasach, tylko implementować wiele interfejsów.</dd>
+        <dt>Wiązanie wczesne i późne</dt>
+        <dd>Wczesne (statyczne): wersja metody znana przy kompilacji, np. metody statyczne, prywatne, finalne, przeładowane. Późne (dynamiczne): wybierana w czasie działania według faktycznego typu obiektu, np. metody wirtualne. Późne wiązanie umożliwia polimorfizm dynamiczny.</dd>
+        <dt>Kopia płytka i głęboka</dt>
+        <dd>Płytka kopiuje pola, ale referencje dalej wskazują te same obiekty w środku, więc zmiana w jednym wpływa na drugi. Głęboka kopiuje także obiekty wskazywane. Ważne np. przy Pamiątce: migawka musi być niezależna od oryginału.</dd>
+        <dt>Spójność (cohesion) i powiązanie (coupling)</dt>
+        <dd>Dobry projekt ma wysoką spójność (klasa robi jedną, dobrze określoną rzecz, por. zasada S) i niskie powiązanie (klasy mało wiedzą o sobie nawzajem, por. zasada D). Wzorce projektowe w większości służą obniżeniu powiązania.</dd>
+        <dt>Klasa finalna</dt>
+        <dd><code>final class</code> (Java) lub <code>sealed class</code> (C#) nie może mieć klas pochodnych. Przykład: <code>String</code> w Javie. Często używana razem z niemodyfikowalnymi obiektami.</dd>
+        <dt>Obiekt niemodyfikowalny (immutable)</dt>
+        <dd>Po utworzeniu jego stanu nie da się zmienić: pola <code>final</code>, brak setterów. Bezpieczny przy współbieżności i jako klucz w mapie. Pamiątka powinna być niemodyfikowalna.</dd>
+        <dt>Wyjątki a hermetyzacja</dt>
+        <dd>Metoda, która dostaje błędne dane, rzuca wyjątek (np. <code>IllegalArgumentException</code>) zamiast po cichu ustawić zły stan. To sposób, w jaki obiekt broni swoich niezmienników; w Lab 1 wymagane jest blokowanie błędnych danych od użytkownika.</dd>
+      </dl>
     </section>
 
     <!-- 4. METODY -->
     <section id="metody" aria-labelledby="h-metody">
-      <h2 id="h-metody"><span class="num" aria-hidden="true">4</span>Rodzaje metod</h2>
+      <h2 id="h-metody"><span class="num" aria-hidden="true">6</span>Rodzaje metod</h2>
       <p>Metody dzieli się według tego, do czego należą (klasa czy obiekt) i jak zachowują się przy dziedziczeniu.</p>
       <dl class="terms">
         <dt>Instancyjna (zwykła)</dt><dd>Należy do obiektu, trzeba go najpierw utworzyć: <code>auto.jedz()</code>. Widzi pola i stan obiektu.</dd>
@@ -287,7 +419,7 @@ int    dodaj(int a, int b, int c)  { return a + b + c; }  // inna liczba paramet
 
     <!-- 5. RELACJE -->
     <section id="relacje" aria-labelledby="h-relacje">
-      <h2 id="h-relacje"><span class="num" aria-hidden="true">5</span>Relacje i strzałki UML</h2>
+      <h2 id="h-relacje"><span class="num" aria-hidden="true">7</span>Relacje i strzałki UML</h2>
       <p>Na diagramie klas wystarczą prostokąty i sześć rodzajów linii. Kolejność poniżej to kolejność według siły relacji z Lab 1, od najsilniejszej.</p>
       <ol class="relations">
         <li>
@@ -347,7 +479,7 @@ int    dodaj(int a, int b, int c)  { return a + b + c; }  // inna liczba paramet
 
     <!-- 6. SOLID -->
     <section id="solid" aria-labelledby="h-solid">
-      <h2 id="h-solid"><span class="num" aria-hidden="true">6</span>SOLID</h2>
+      <h2 id="h-solid"><span class="num" aria-hidden="true">8</span>SOLID</h2>
       <p>Pięć podstawowych zasad projektowania obiektowego.</p>
       <div class="table-wrap">
         <table class="solid">
@@ -393,7 +525,7 @@ new Sklep(new PlatnoscBlik()).kup(49.99);</code></pre>
 
     <!-- 7. WZORCE -->
     <section id="wzorce" aria-labelledby="h-wzorce">
-      <h2 id="h-wzorce"><span class="num" aria-hidden="true">7</span>Wzorce projektowe</h2>
+      <h2 id="h-wzorce"><span class="num" aria-hidden="true">9</span>Wzorce projektowe</h2>
       <p>Na każdym diagramie kliknij klasę albo strzałkę, a pod spodem pojawi się wyjaśnienie. To samo zrobisz klawiaturą przyciskami pod rysunkiem.</p>
       <div class="table-wrap">
         <table>
@@ -409,6 +541,10 @@ new Sklep(new PlatnoscBlik()).kup(49.99);</code></pre>
       <article id="singleton" class="pattern">
         <h3>Singleton <span class="tag">kreacyjny</span> <span class="pen-inline">nowe</span></h3>
         <p class="gist">Ogranicza liczbę obiektów klasy do jednego i daje do niego globalny dostęp.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Singleton to wzorzec kreacyjny, który gwarantuje, że klasa ma dokładnie jeden obiekt, i daje do niego globalny punkt dostępu. Konstruktor jest prywatny, więc nikt z zewnątrz nie zrobi <code>new</code>. Klasa trzyma swoją jedyną instancję w statycznym polu i udostępnia statyczną metodę <code>getInstance()</code>: przy pierwszym wywołaniu tworzy obiekt (leniwa inicjalizacja), przy kolejnych zwraca ten sam. Stosuje się go do zasobów, które muszą być jedne, np. konfiguracja, połączenie z bazą, logger. Wady: to w praktyce zmienna globalna, utrudnia testowanie i ukrywa zależności, a w programach wielowątkowych trzeba zsynchronizować tworzenie.</p>
+        </div>
         <figure class="uml" data-uml="singleton">
           <div class="uml-scroll"><div class="uml-canvas" style="--w:580;--h:170"></div></div>
         </figure>
@@ -437,6 +573,10 @@ Konfiguracja b = Konfiguracja.getInstance();
       <article id="adapter" class="pattern">
         <h3>Adapter <span class="tag">strukturalny</span></h3>
         <p class="gist">Łączy dwie niepasujące klasy: tłumaczy interfejs, którego oczekuje klient, na interfejs istniejącej klasy, bez ruszania jej kodu.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Adapter to wzorzec strukturalny, który pozwala współpracować klasom o niezgodnych interfejsach bez zmiany ich kodu. Mamy klienta, który oczekuje interfejsu docelowego (Target), i istniejącą klasę (Adaptee) z innym interfejsem. Adapter implementuje interfejs docelowy, a w środku trzyma referencję do obiektu adaptowanego i tłumaczy wywołania: zamienia nazwy metod, przelicza dane, zmienia format. Klient rozmawia tylko z adapterem. W Lab 2 <code>Polar2DAdapter</code> implementuje <code>IPolar2D</code>, deleguje <code>abs()</code>, <code>cdot()</code> i <code>getComponents()</code> do <code>Vector2D</code>, a jedyną nową logiką jest <code>getAngle()</code> liczone przez atan2. Przewaga nad dziedziczeniem: adapter działa na istniejącym obiekcie w czasie działania programu i nie wiąże się z konkretną podklasą.</p>
+        </div>
         <p>Jak przejściówka do gniazdka albo nakładka, która z XML starej biblioteki robi JSON dla nowego systemu. Poniżej wersja z Lab 2: klient chce kąt wektora w układzie biegunowym, a <code>Vector2D</code> zna tylko x i y.</p>
         <figure class="uml" data-uml="adapter">
           <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:350"></div></div>
@@ -467,6 +607,10 @@ class Polar2DAdapter implements IVector, IPolar2D {
       <article id="dekorator" class="pattern">
         <h3>Dekorator <span class="tag">strukturalny</span></h3>
         <p class="gist">Dynamicznie dokłada obiektowi nowe zachowanie, bez zmiany jego kodu i bez mnożenia podklas.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Dekorator to wzorzec strukturalny do dynamicznego dodawania obiektom nowych funkcji. Dekorator implementuje ten sam interfejs co obiekt dekorowany i jednocześnie przechowuje do niego referencję. Każde wywołanie przekazuje dalej do obiektu w środku, a przed albo po nim dokłada własne zachowanie. Ponieważ interfejs się nie zmienia, dekoratory można nakładać jeden na drugi w dowolnej kolejności. Rozwiązuje to problem eksplozji podklas: zamiast klasy na każdą kombinację dodatków mamy jedną klasę na każdy dodatek. W Lab 2 <code>Vector3DDecorator</code> owija dowolny <code>IVector</code>, dodaje składową z i metodę <code>cross()</code>, a <code>getSrcV()</code> oddaje oryginał. Wersja z dziedziczeniem (<code>Vector3DInheritance</code>) musi utworzyć nowy obiekt i jest ustalona przy kompilacji.</p>
+        </div>
         <p>Zamiast klas <code>KawaZMlekiem</code>, <code>KawaZSyropem</code>, <code>KawaZMlekiemISyropem</code> owijasz <code>KawaBaza</code> w dekorator <code>Mleko</code>, a potem w <code>Syrop</code>. Każdy woła <code>cena()</code> obiektu w środku i dolicza swoją kwotę. W Lab 2 dekorator dodaje wektorowi trzeci wymiar i iloczyn wektorowy.</p>
         <figure class="uml" data-uml="dekorator">
           <div class="uml-scroll"><div class="uml-canvas" style="--w:760;--h:400"></div></div>
@@ -509,7 +653,11 @@ class Polar2DAdapter implements IVector, IPolar2D {
       <article id="stan" class="pattern">
         <h3>Stan <span class="tag">behawioralny</span></h3>
         <p class="gist">Obiekt zmienia zachowanie zależnie od stanu, w którym jest. Z zewnątrz wygląda, jakby zmienił klasę.</p>
-        <p>Zamiast <code>if (stan == NOWY) ... else if (stan == WYSLANY) ...</code> każdy stan to osobna klasa ze wspólnym interfejsem. Kontekst trzyma bieżący stan i deleguje do niego akcje. Ta sama metoda <code>anuluj()</code> w stanie Nowe zwraca pieniądze, a w stanie Wysłane blokuje operację. Inne przykłady: automat z napojami, automat skończony.</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Stan to wzorzec behawioralny, w którym obiekt zmienia zachowanie, gdy zmienia się jego stan wewnętrzny. Zamiast jednej klasy z rozbudowanymi instrukcjami if albo switch po polu „stan”, każdy stan jest osobną klasą implementującą wspólny interfejs. Kontekst przechowuje referencję do bieżącego obiektu stanu i deleguje mu wywołania, przekazując siebie w parametrze. Konkretne stany decydują, co zrobić, i same przełączają kontekst w następny stan. Odpowiada to automatowi skończonemu. Zalety: nowy stan to nowa klasa (zasada otwarte/zamknięte), logika jednego stanu jest w jednym miejscu (zasada jednej odpowiedzialności). Wada: więcej klas przy małej liczbie stanów.</p>
+        </div>
+        <p>Przykład z diagramu: ta sama metoda <code>anuluj()</code> w stanie Nowe zwraca pieniądze, a w stanie Wysłane blokuje operację. Inne przykłady: automat z napojami, stan wozu w Lab 4 (wolny, zajęty).</p>
         <figure class="uml" data-uml="stan">
           <div class="uml-scroll"><div class="uml-canvas" style="--w:800;--h:330"></div></div>
         </figure>
@@ -542,7 +690,10 @@ class Zamowienie {
       <article id="pamiatka" class="pattern">
         <h3>Pamiątka (Memento) <span class="tag">behawioralny</span></h3>
         <p class="gist">Zapisuje migawkę stanu obiektu i pozwala go później przywrócić (Cofnij, zapis gry), nie ujawniając prywatnych pól.</p>
-        <p>Trzy role: <strong>Twórca</strong> (obiekt, którego stan zapisujemy; sam tworzy pamiątkę i sam się z niej odtwarza), <strong>Pamiątka</strong> (niemodyfikowalna migawka), <strong>Opiekun</strong> (trzyma historię, np. stos, ale nie zagląda do środka).</p>
+        <div class="oral">
+          <p class="oral-label">Odpowiedź ustna</p>
+          <p>Pamiątka (Memento) to wzorzec behawioralny, który pozwala zapisać i później przywrócić stan obiektu bez naruszania hermetyzacji. Ma trzy role. Twórca to obiekt, którego stan zapisujemy; sam tworzy pamiątkę ze swoich prywatnych pól i sam umie się z niej odtworzyć. Pamiątka to mały, niemodyfikowalny obiekt z migawką stanu. Opiekun przechowuje pamiątki, na przykład na stosie dla funkcji Cofnij, ale nie czyta ani nie zmienia ich zawartości; wie tylko, kiedy poprosić Twórcę o zapis lub przywrócenie. Dzięki temu nie trzeba upubliczniać pól Twórcy. Przykłady: Ctrl+Z w edytorze, zapis gry, w Lab 3 zapis i wczytanie symulacji w chwili t. Wada: przy dużym stanie i częstych zapisach zużycie pamięci.</p>
+        </div>
         <figure class="uml" data-uml="pamiatka">
           <div class="uml-scroll"><div class="uml-canvas" style="--w:720;--h:340"></div></div>
         </figure>
@@ -684,7 +835,7 @@ class JednostkaJRG implements Observer {
 
     <!-- 8. WEKTORY -->
     <section id="wektory" aria-labelledby="h-wektory">
-      <h2 id="h-wektory"><span class="num" aria-hidden="true">8</span>Wektory i układy współrzędnych</h2>
+      <h2 id="h-wektory"><span class="num" aria-hidden="true">10</span>Wektory i układy współrzędnych</h2>
       <p>Z Lab 2: wektor wodzący zaczyna się w (0, 0). W układzie kartezjańskim zapisujesz go jako (x, y), w biegunowym jako (r, α): długość i kąt od osi OX.</p>
 
       <div class="formulas">
@@ -750,7 +901,7 @@ a × b = | x₁  y₁  z₁ |
 
     <!-- 9. LABY -->
     <section id="laby" aria-labelledby="h-laby">
-      <h2 id="h-laby"><span class="num" aria-hidden="true">9</span>Wzorce w zadaniach z labów</h2>
+      <h2 id="h-laby"><span class="num" aria-hidden="true">11</span>Wzorce w zadaniach z labów</h2>
       <p>Przy oddawaniu projektu prowadzący może zapytać, gdzie użyłeś którego wzorca. Poniżej propozycja dopasowania na podstawie treści instrukcji, nie oficjalne rozwiązanie.</p>
       <div class="table-wrap">
         <table class="labs">
@@ -765,9 +916,34 @@ a × b = | x₁  y₁  z₁ |
       </div>
     </section>
 
-    <!-- 10. QUIZ -->
+    <!-- 12. FISZKI -->
+    <section id="fiszki" aria-labelledby="h-fiszki">
+      <h2 id="h-fiszki"><span class="num" aria-hidden="true">12</span>Fiszki</h2>
+      <p>Przeczytaj pytanie, odpowiedz na głos, dopiero potem odwróć kartę. Oznacz, czy umiesz: karty „jeszcze nie” wracają na koniec talii.</p>
+      <div class="cards">
+        <div class="cards-bar">
+          <label class="cards-filter">Temat
+            <select id="cards-topic"></select>
+          </label>
+          <p id="cards-progress" class="quiz-progress" aria-live="polite">Fiszki się wczytują…</p>
+          <button type="button" class="btn btn-small" id="cards-shuffle">Potasuj</button>
+        </div>
+        <div class="card" id="card">
+          <p class="quiz-topic" id="card-topic"></p>
+          <p class="card-front" id="card-front">Fiszki się wczytują. Jeśli ten napis nie znika, włącz JavaScript.</p>
+          <div class="card-back" id="card-back" hidden></div>
+        </div>
+        <div class="cards-actions">
+          <button type="button" class="btn btn-primary" id="card-flip" aria-expanded="false" aria-controls="card-back">Pokaż odpowiedź</button>
+          <button type="button" class="btn" id="card-again" disabled>Jeszcze nie umiem</button>
+          <button type="button" class="btn" id="card-know" disabled>Umiem</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. QUIZ -->
     <section id="quiz" aria-labelledby="h-quiz">
-      <h2 id="h-quiz"><span class="num" aria-hidden="true">10</span>Sprawdź się</h2>
+      <h2 id="h-quiz"><span class="num" aria-hidden="true">13</span>Sprawdź się</h2>
       <p>Pytania z całego zeszytu. Po każdej odpowiedzi zobaczysz wyjaśnienie, a na końcu możesz powtórzyć tylko błędne.</p>
       <div class="quiz">
         <div class="quiz-bar">

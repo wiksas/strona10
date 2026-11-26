@@ -336,6 +336,27 @@ pre.formula { background: none; padding: 0; line-height: 1.45; font-size: .95rem
 .verdict.is-wrong { color: var(--pen); }
 .quiz-actions { display: flex; flex-wrap: wrap; gap: var(--s1); }
 
+/* ---------- filary: odpowiedź ustna ---------- */
+.pillar { margin-top: var(--s5); }
+.pillar h3 { font-size: 1.55rem; margin-top: 0; }
+.pillar .gist { font-size: 1.12rem; font-style: italic; }
+.pillar h4 { margin-top: var(--s3); }
+/* Ramka odróżnia gotową odpowiedź do wygłoszenia od reszty notatek. */
+.oral { border: 1.5px solid var(--ink); border-radius: 4px; background: var(--box); padding: var(--s2) var(--s3); margin: 0 0 var(--s3); }
+.oral p:last-child { margin-bottom: 0; }
+.oral-label { font-family: var(--hand); font-size: 1.35rem; line-height: 1; color: var(--pen); margin-bottom: .4rem; }
+
+/* ---------- fiszki ---------- */
+.cards { border: 1.5px solid var(--ink); border-radius: 4px; background: var(--box); }
+.cards-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s1) var(--s2); padding: var(--s1) var(--s3); border-bottom: 1px solid var(--rule); }
+.cards-filter { display: flex; align-items: center; gap: .5rem; font-size: .92rem; font-weight: 600; }
+.cards-filter select { font: 400 .95rem var(--serif); color: var(--ink); background: var(--paper); border: 1px solid var(--muted); border-radius: 3px; min-height: 44px; padding: 0 .5rem; }
+.card { padding: var(--s4) var(--s3); min-height: 14rem; }
+.card-front { font-size: 1.35rem; font-weight: 650; line-height: 1.35; margin: 0; }
+.card-back { margin-top: var(--s3); padding-top: var(--s2); border-top: 1px dashed var(--rule); font-size: 1.05rem; }
+.cards-actions { display: flex; flex-wrap: wrap; gap: var(--s1); padding: 0 var(--s3) var(--s3); }
+.btn:disabled { opacity: .5; }
+
 /* ---------- stopka ---------- */
 .site-footer { border-top: 1px solid var(--rule); padding: var(--s3) clamp(1rem, 4vw, 3rem) var(--s4); font-size: .92rem; color: var(--muted); }
 .site-footer a { display: inline-block; padding: .55rem 0; }

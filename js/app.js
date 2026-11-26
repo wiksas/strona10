@@ -255,4 +255,61 @@
     start(shuffle(Q.map(function (_, k) { return k; })));
     document.getElementById("quiz-q").focus();
   });
+
+  /* ---------- fiszki ---------- */
+  var F = window.FLASHCARDS;
+  var topicSel = document.getElementById("cards-topic");
+  var cardTopic = document.getElementById("card-topic");
+  var front = document.getElementById("card-front");
+  var back = document.getElementById("card-back");
+  var flip = document.getElementById("card-flip");
+  var again = document.getElementById("card-again");
+  var know = document.getElementById("card-know");
+  var cardsProgress = document.getElementById("cards-progress");
+  var deck = { queue: [], known: 0, total: 0 };
+
+  ["Wszystkie"].concat(F.map(function (c) { return c.topic; }).filter(function (t, i, a) { return a.indexOf(t) === i; }))
+    .forEach(function (t) {
+      var o = document.createElement("option");
+      o.value = t;
+      o.textContent = t === "Wszystkie" ? "Wszystkie (" + F.length + ")" : t + " (" + F.filter(function (c) { return c.topic === t; }).length + ")";
+      topicSel.appendChild(o);
+    });
+
+  function dealDeck(random) {
+    var t = topicSel.value;
+    var idx = F.map(function (_, k) { return k; }).filter(function (k) { return t === "Wszystkie" || F[k].topic === t; });
+    deck = { queue: random ? shuffle(idx) : idx, known: 0, total: idx.length };
+    showCard();
+  }
+  function setFlipped(on) {
+    back.hidden = !on;
+    flip.setAttribute("aria-expanded", String(on));
+    flip.textContent = on ? "Ukryj odpowiedź" : "Pokaż odpowiedź";
+    again.disabled = !on;
+    know.disabled = !on;
+  }
+  function showCard() {
+    cardsProgress.textContent = "Umiesz " + deck.known + " z " + deck.total + " \u00b7 zostało " + deck.queue.length;
+    if (!deck.queue.length) {
+      cardTopic.textContent = "";
+      front.textContent = "Koniec talii: umiesz wszystkie karty z tego tematu (" + deck.total + "). Wybierz inny temat albo potasuj, żeby przejść je jeszcze raz.";
+      back.textContent = "";
+      setFlipped(false);
+      flip.disabled = true;
+      return;
+    }
+    var c = F[deck.queue[0]];
+    flip.disabled = false;
+    cardTopic.textContent = c.topic;
+    front.textContent = c.q;
+    back.textContent = c.a;
+    setFlipped(false);
+  }
+  flip.addEventListener("click", function () { setFlipped(back.hidden); });
+  know.addEventListener("click", function () { deck.queue.shift(); deck.known++; showCard(); (flip.disabled ? topicSel : flip).focus(); });
+  again.addEventListener("click", function () { deck.queue.push(deck.queue.shift()); showCard(); flip.focus(); });
+  topicSel.addEventListener("change", function () { dealDeck(false); });
+  document.getElementById("cards-shuffle").addEventListener("click", function () { dealDeck(true); });
+  dealDeck(false);
 })();
